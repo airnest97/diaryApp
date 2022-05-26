@@ -1,21 +1,28 @@
 package diary;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static org.testng.AssertJUnit.*;
 
 public class DiaryTest {
+    private User ernest;
+    private Diary diary;
+    DiaryApp dukunDiary;
+    @BeforeMethod
+    public void setUp() {
+        ernest = new User();
+        diary = new Diary(ernest);
+        dukunDiary= new DiaryApp();
+    }
+
     @Test
     void diaryCanBeCreatedTest(){
-        User ernest = new User();
-        Diary diary = new Diary(ernest);
         assertNotNull(diary);
     }
 
     @Test
     public void createEntryTest(){
-        User akin = new User();
-        Diary diary = new Diary(akin);
         diary.registerEntry("Hello World", "Sending a big hello to the world");
         diary.registerEntry("Hello Jerusalem", "We are coming to build our city");
         assertEquals(2, diary.numberOfEntries());
@@ -23,8 +30,6 @@ public class DiaryTest {
 
     @Test
     public void findEntryTest(){
-        User akin = new User();
-        Diary diary = new Diary(akin);
         diary.registerEntry("Hello World", "Sending a big hello to the world");
         diary.registerEntry("Hello Jerusalem", "We are coming to build our city");
         Entries entry = diary.findEntryBy("Hello World");
@@ -34,8 +39,6 @@ public class DiaryTest {
 
     @Test
     public void deleteEntryTest(){
-        User akin = new User();
-        Diary diary = new Diary(akin);
         diary.registerEntry("Hello World", "Sending a big hello to the world");
         diary.registerEntry("Hello Jerusalem", "We are coming to build our city");
         diary.deleteEntry(diary.findEntryBy("Hello World"));
@@ -44,14 +47,12 @@ public class DiaryTest {
 
     @Test
     public void signIntoDiaryTest(){
-        DiaryApp dukunDiary = new DiaryApp();
         dukunDiary.createAccount("kay@gmail.com", "kayCool", 1234);
         assertTrue(dukunDiary.userExists("kay@gmail.com", "kayCool", 1234));
     }
 
     @Test
     public void noDuplicateEmailTest(){
-        DiaryApp dukunDiary = new DiaryApp();
         dukunDiary.createAccount("kay@gmail.com", "kayCool", 1234);
         assertTrue(dukunDiary.userExists("kay@gmail.com", "kayCool", 1234));
         dukunDiary.createAccount("kay@gmail.com", "metSol", 4321);
@@ -60,7 +61,6 @@ public class DiaryTest {
 
     @Test
     public void lockAndUnlockTest(){
-        DiaryApp dukunDiary = new DiaryApp();
         dukunDiary.createAccount("kay@gmail.com", "kayCool", 1234);
         Diary diary = dukunDiary.myDiary("kay@gmail.com");
         assertFalse(diary.isLocked());
@@ -74,16 +74,14 @@ public class DiaryTest {
 
     @Test
     public void diaryAppCanHaveMultipleUsers(){
-        DiaryApp dukunApp = new DiaryApp();
-        dukunApp.createAccount("kay@gmail.com", "kayCool", 1234);
-        dukunApp.createAccount("tola@gmail.com", "tolly", 4321);
-        assertEquals(2, dukunApp.numberOfUsers());
+        dukunDiary.createAccount("kay@gmail.com", "kayCool", 1234);
+        dukunDiary.createAccount("tola@gmail.com", "tolly", 4321);
+        assertEquals(2, dukunDiary.numberOfUsers());
     }
 
     @Test
     public void unlockBeforeCreatingEntry(){
-        DiaryApp dukunApp = new DiaryApp();
-        Diary myDiary = dukunApp.createAccount("kay@gmail.com", "kayCool", 1234);
+        Diary myDiary = dukunDiary.createAccount("kay@gmail.com", "kayCool", 1234);
         myDiary.lock();
         myDiary.registerEntry("Hello World", "Sending a big hello to the world");
         assertEquals(0, myDiary.numberOfEntries());
@@ -91,8 +89,7 @@ public class DiaryTest {
 
     @Test
     public void unlockedBeforeFindingEntry(){
-        DiaryApp dukunApp = new DiaryApp();
-        Diary myDiary = dukunApp.createAccount("kay@gmail.com", "kayCool", 1234);
+        Diary myDiary = dukunDiary.createAccount("kay@gmail.com", "kayCool", 1234);
         myDiary.registerEntry("Hello World", "Sending a big hello to the world");
         assertEquals(1, myDiary.numberOfEntries());
         myDiary.lock();
